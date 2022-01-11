@@ -15,14 +15,6 @@ from telethon import TelegramClient, events
 from decouple import config
 import logging
 from telethon.sessions import StringSession
-import requests
-
-# Discord 
-
-USER_DISCORD_TOKEN = 'Njg4NDQ1NDg5NzY2ODU4Nzcx.Yd2Iww.2QsDq71ncPt17Qfq7CKYZero7oo'
-CHANNEL_DISCORD_ID_CALLS = '930410485520666624'
-CHANNEL_DISCORD_ID_PROJECTS = '930410319187169290'
-CHANNEL_DISCORD_ID_DEVS = '930419530252042250'
 
 WORDS_FAIR_LAUNCH = ['OUR FAIR LAUNCH', "OUR STEALTH LAUNCH", "OUR GROUP",
                         "OUR LAUNCH", "OUR PROJECT", "OUR STEALTH", "OUR LAUNCH","OUR NEXT PROJECT", "OUR PRIVATE SALE", "OUR PRESALE", "OUR GEM", 
@@ -63,14 +55,6 @@ except Exception as ap:
 
 async def sender_bH(event):
 
-    def sendMessage(USER_DISCORD_TOKEN, CHANNEL_DISCORD_ID, MESSAGE):
-
-        url = 'https://discord.com/api/v8/channels/{}/messages'.format(CHANNEL_DISCORD_ID)
-        data = {"content": MESSAGE}
-        header = {"authorization": USER_DISCORD_TOKEN}
-    
-        r = requests.post(url, data=data, headers=header)
-
     for i in TO:
 
         title_fromchat = event.chat.title
@@ -85,8 +69,6 @@ async def sender_bH(event):
                     i,
                     completed_message
                 )
-
-                sendMessage(USER_DISCORD_TOKEN, CHANNEL_DISCORD_ID_CALLS, completed_message)
             
             elif any(word in event.message.message.upper() for word in WORDS_FAIR_LAUNCH):
 
@@ -97,8 +79,6 @@ async def sender_bH(event):
                     completed_message
                 )
 
-                sendMessage(USER_DISCORD_TOKEN, CHANNEL_DISCORD_ID_PROJECTS, completed_message)
-
             elif any(word in event.message.message.upper() for word in WORDS_DEVS_PROJECT):
                 
                 completed_message = "‼️**TYPE: DEV GROUP**\n" + f"🗣__GROUP: {title_fromchat}__" + "\n" + event.message.message + "\n"
@@ -107,8 +87,6 @@ async def sender_bH(event):
                     i,
                     completed_message
                 )
-                
-                sendMessage(USER_DISCORD_TOKEN, CHANNEL_DISCORD_ID_DEVS, completed_message)
 
             else:
 
