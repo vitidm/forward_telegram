@@ -15,13 +15,30 @@ from telethon import TelegramClient, events
 from decouple import config
 import logging
 from telethon.sessions import StringSession
+import requests
 
+# Discord 
+
+USER_DISCORD_TOKEN = 'Njg4NDQ1NDg5NzY2ODU4Nzcx.Yd1YJQ.RWIfrrOFM03NYWWgzgUNv4oQKUI'
+CHANNEL_DISCORD_ID_CALLS = '930410485520666624'
+CHANNEL_DISCORD_ID_PROJECTS = '930410319187169290'
+CHANNEL_DISCORD_ID_DEVS = '930419530252042250'
+
+WORDS_FAIR_LAUNCH = ['OUR FAIR LAUNCH', "OUR STEALTH LAUNCH", "OUR GROUP",
+                        "OUR LAUNCH", "OUR PROJECT", "OUR STEALTH", "OUR LAUNCH","OUR NEXT PROJECT", "OUR PRIVATE SALE", "OUR PRESALE", "OUR GEM", 
+                            "OUR NEXT PLAY", "OUR FIRST", "OUR NEW LAUNCH", "OUR FIRST DEGEN COIN", "OUR BIG LAUNCH", 
+                                "I'M WORKING", "IN FEW DAYS", "I HAVE WORKED", "I'M GOING TO LAUNCH", "WE ARE DOING", "WE ARE GOING TO LAUNCH", 
+                                    "MY PROJECT", "WE HAVE WORKED", "MY NEXT PROJECT", "WE ARE PREPARING", "NEXT PLAY",
+                                        "MY NEXT FAIR LAUNCH", "TOMORROW", "THIS WEEK"]
+
+WORDS_DEVS_PROJECT = ["DEV CALL GROUP", "CALL GROUP"]
 
 logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s', level=logging.WARNING)
 
 print("Starting...")
 
-# Basics
+# Telegram
+
 APP_ID = config("APP_ID", default=None, cast=int)
 API_HASH = config("API_HASH", default=None)
 SESSION = config("SESSION")
@@ -46,16 +63,56 @@ except Exception as ap:
 
 async def sender_bH(event):
 
+    def sendMessage(USER_DISCORD_TOKEN, CHANNEL_DISCORD_ID, MESSAGE):
+
+        url = 'https://discord.com/api/v8/channels/{}/messages'.format(CHANNEL_DISCORD_ID)
+        data = {"content": MESSAGE}
+        header = {"authorization": USER_DISCORD_TOKEN}
+    
+        r = requests.post(url, data=data, headers=header)
+
     for i in TO:
 
         title_fromchat = event.chat.title
         
         try:
 
-            await BotzHubUser.send_message(
-                i,
-                title_fromchat + ":\n" + event.message.message
-            )
+            if ("poocoin" in event.message.message) or ("0x" in event.message.message):
+
+                completed_message = "‼️**TYPE: CALLS**\n" + f"🗣__GROUP: {title_fromchat}__" + "\n" + event.message.message + "\n"
+
+                await BotzHubUser.send_message(
+                    i,
+                    completed_message
+                )
+
+                sendMessage(USER_DISCORD_TOKEN, CHANNEL_DISCORD_ID_CALLS, completed_message)
+            
+            elif any(word in event.message.message.upper() for word in WORDS_FAIR_LAUNCH):
+
+                completed_message = "‼️**TYPE: NEXT LAUNCH**\n" + f"🗣__GROUP: {title_fromchat}__" + "\n" + event.message.message + "\n"
+
+                await BotzHubUser.send_message(
+                    i,
+                    completed_message
+                )
+
+                sendMessage(USER_DISCORD_TOKEN, CHANNEL_DISCORD_ID_PROJECTS, completed_message)
+
+            elif any(word in event.message.message.upper() for word in WORDS_DEVS_PROJECT):
+                
+                completed_message = "‼️**TYPE: DEV GROUP**\n" + f"🗣__GROUP: {title_fromchat}__" + "\n" + event.message.message + "\n"
+
+                await BotzHubUser.send_message(
+                    i,
+                    completed_message
+                )
+                
+                sendMessage(USER_DISCORD_TOKEN, CHANNEL_DISCORD_ID_DEVS, completed_message)
+
+            else:
+
+                print('*')
             
         except Exception as e:
 
